@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres:latest # Use the latest PostgreSQL image from Docker Hub
+    container_name: pms_db # Name for the container
+    environment:
+      POSTGRES_DB: mydatabase # The name of the database to create
+      POSTGRES_USER: myuser # The user to create
+      POSTGRES_PASSWORD: mypassword # The password for the user
+    ports:
+      - "5432:5432" # Expose the PostgreSQL port
+    command: >
+      postgres -c listen_addresses=*
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d mydatabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - ./pgdata:/var/lib/postgresql/data # Persist data
+
+volumes:
+  pgdata: # Named volume for data persistence
