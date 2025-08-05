@@ -10,10 +10,13 @@ spring:
         - id: patient-service
           uri: http://patient-service:8081
           predicates:
-            - Path=/api/patient/**
-          filters:
-            - StripPrefix=2
+            - Path=/api/patients/**
 
-eureka:
-  client:
-    enabled: false
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+  endpoint:
+    gateway:
+      enabled: true
