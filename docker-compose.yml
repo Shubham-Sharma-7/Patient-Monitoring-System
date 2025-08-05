@@ -1,13 +1,13 @@
 services:
   db:
-    image: postgres:latest # Use the latest PostgreSQL image from Docker Hub
-    container_name: pms_db # Name for the container
+    image: postgres:latest
+    container_name: pms_db
     environment:
-      POSTGRES_DB: mydatabase # The name of the database to create
-      POSTGRES_USER: myuser # The user to create
-      POSTGRES_PASSWORD: mypassword # The password for the user
+      POSTGRES_DB: mydatabase
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mypassword
     ports:
-      - "5432:5432" # Expose the PostgreSQL port
+      - "5432:5432"
     command: >
       postgres -c listen_addresses=*
     healthcheck:
@@ -16,7 +16,26 @@ services:
       timeout: 5s
       retries: 5
     volumes:
-      - ./pgdata:/var/lib/postgresql/data # Persist data
+      - pgdata:/var/lib/postgresql/data
+
+  patient-service:
+    build: ./patient-service
+    ports:
+      - "8081:8081"
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    restart: on-failure
+
+  api-gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - patient-service
+    restart: on-failure
 
 volumes:
-  pgdata: # Named volume for data persistence
+  pgdata:
