@@ -27,12 +27,22 @@ services:
       SPRING_PROFILES_ACTIVE: docker
     restart: on-failure
 
+  vitals-service:
+    build: ./vitals-service
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_PROFILES_ACTIVE: docker
+    restart: on-failure
+
   api-gateway:
     build: ./api-gateway
     ports:
       - "8080:8080"
     depends_on:
       - patient-service
+      - vitals-service
     restart: on-failure
 
 volumes:
